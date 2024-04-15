@@ -3,6 +3,7 @@ use std::{
     sync::{atomic::AtomicBool, Arc, Mutex},
     mem
 };
+use std::process::exit;
 use std::process::Command;
 use std::str::FromStr;
 use bs58;
@@ -114,7 +115,8 @@ impl Miner {
                         break;
                     }
                     Err(_err) => {
-                        // TODO
+                        println!("Failed to submit transaction. exit(0)");
+                        exit(0);
                     }
                 }
             }
@@ -167,7 +169,7 @@ impl Miner {
         let signer = self.signer();
         let pubkey = signer.pubkey();
 
-    let mut child = tokio::process::Command::new("PATH_TO_EXE")
+    let mut child = tokio::process::Command::new("C:/ore/ore-cli-gpu/windows.exe")
     .stdin(std::process::Stdio::piped())
     .stdout(std::process::Stdio::piped())
     .stderr(std::process::Stdio::piped())

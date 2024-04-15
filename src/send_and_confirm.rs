@@ -37,14 +37,14 @@ impl Miner {
         let signer = self.signer();
         let client = self.rpc_client.clone();
 
-        // Return error if balance is zero
-        let balance = client.get_balance(&signer.pubkey()).await.unwrap();
-        if balance <= 0 {
-            return Err(ClientError {
-                request: None,
-                kind: ClientErrorKind::Custom("Insufficient SOL balance".into()),
-            });
-        }
+        // // Return error if balance is zero
+        // let balance = client.get_balance(&signer.pubkey()).await.unwrap();
+        // if balance <= 0 {
+        //     return Err(ClientError {
+        //         request: None,
+        //         kind: ClientErrorKind::Custom("Insufficient SOL balance".into()),
+        //     });
+        // }
 
         // Build tx
         let (_hash, slot) = client
@@ -79,8 +79,9 @@ impl Miner {
                 .await;
             match sim_res {
                 Ok(sim_res) => {
+                    println!("Ok(sim_res): {:?}", sim_res);
                     if let Some(err) = sim_res.value.err {
-                        println!("Simulaton error: {:?}", err);
+                        println!("Ok(sim_res):Simulaton error: {:?}", err);
                         sim_attempts += 1;
                     } else if let Some(units_consumed) = sim_res.value.units_consumed {
                         if dynamic_cus {
@@ -99,7 +100,7 @@ impl Miner {
                     }
                 }
                 Err(err) => {
-                    println!("Simulaton error: {:?}", err);
+                    println!("Err(err):Simulaton error: {:?}", err);
                     sim_attempts += 1;
                 }
             }
@@ -166,7 +167,11 @@ impl Miner {
 
                             // Handle confirmation errors
                             Err(err) => {
-                                println!("{:?}", err.kind().to_string());
+                                println!("Handle confirmation errors:{:?}", err.kind().to_string());
+                                return Err(ClientError {
+                                    request: None,
+                                    kind: ClientErrorKind::Custom("Handle confirmation errors".into()),
+                                });
                             }
                         }
                     }
@@ -175,7 +180,11 @@ impl Miner {
 
                 // Handle submit errors
                 Err(err) => {
-                    println!("{:?}", err.kind().to_string());
+                    println!("Handle submit errors: {:?}", err.kind().to_string());
+                    return Err(ClientError {
+                        request: None,
+                        kind: ClientErrorKind::Custom("Handle submit errors".into()),
+                    });
                 }
             }
 
